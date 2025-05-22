@@ -1,1 +1,117 @@
+# 📌 README: Criação de maquinas virtuais e configuração,
 
+Este repositório documenta conceitos essenciais de *computação em nuvem, com foco em **SLAs (Service Level Agreements)*, estratégias de alta disponibilidade e decisões arquiteturais que impactam custos e desempenho.  
+
+---
+
+## 🔍 *Conceitos Fundamentais*  
+
+### 1. *Benefícios da Nuvem e Impacto no SLA*  
+- *SLA (Acordo de Nível de Serviço)* define a disponibilidade garantida do serviço.  
+ 
+
+
+### 📊 *Tabela de SLA vs Tempo de Inatividade Permitido*
+
+| *Nível de SLA* | *Inatividade Mensal* | *Inatividade Anual*  | *Cenário de Uso Típico*          |
+|------------------|-----------------------|------------------------|-----------------------------------|
+| *99%*          | 7h 18min              | *3 dias 15h 36min*   | Testes/dev, baixa criticidade     |
+| *99.9%*        | 43min 48s             | *8h 45min 36s*       | Aplicações não críticas           |
+| *99.95%*       | 21min 54s             | *4h 22min 48s*       | Sistemas empresariais básicos    |
+| *99.99%*       | 4min 23s              | *52min 34s*          | E-commerce, serviços essenciais  |
+| *99.999%*      | 26s                   | *5min 15s*           | Sistemas financeiros, saúde      |
+
+
+2. *Como Calcular*:
+   - *Mensal*: (100% - SLA) × 30 dias × 24h.
+   - *Anual*: (100% - SLA) × 365 dias × 24h.
+
+3. *Exemplo Prático*:
+   - Para *SLA 99.99%*:
+     - Mensal: 0.01% × 720h = 0.072h ≈ 4min 23s.
+     - Anual: 0.01% × 8760h = 0.876h ≈ 52min 34s.
+
+
+### ⚠️ *Impacto nos Custos*:
+- Cada "9" adicional aumenta significativamente o custo (ex: 99.99% pode custar *10x mais* que 99.9%).
+- *Trade-off*: Balanceie a criticidade do serviço com o orçamento.
+
+---
+
+### 📌 *Links Úteis*:
+- [Calculadora de SLA em Tempo Real](https://uptime.is/)
+- [Microsoft Azure SLA Calculator](https://azure.microsoft.com/en-us/support/legal/sla/)
+
+
+
+
+### 2. *Estrutura Arquitetural e Serviços*  
+- *Zonas de Disponibilidade (AZs)*:  
+  - Conjunto de datacenters isolados dentro de uma região.  
+  - *Estratégia*: Distribuir VMs em múltiplas AZs para tolerância a falhas.  
+- *Tipos de Armazenamento*:  
+  - *LRS (Local Redundant Storage)*: Cópias em um único datacenter (mais barato, menos resiliente).  
+  - *GRS (Geo-Redundant Storage)*: Replicação para outra região (alta disponibilidade).  
+  - *ZRS (Zone-Redundant Storage)*: Dados replicados em múltiplas AZs.  
+
+---
+
+## 🛠 *Prática: Criando uma VM com Alta Disponibilidade*  
+
+### *Passo a Passo (Exemplo Azure/Microsoft)*  
+1. *Defina a Região e Zona de Disponibilidade*:  
+   - Escolha regiões com múltiplas AZs (ex: East US 2).  
+   - Posicione o mouse sobre as opções para ver detalhes de redundância.  
+
+2. *Configure Redundância*:  
+   - Selecione *"Conjunto de Disponibilidade"* para distribuir VMs em hardware distinto.  
+   - Use *"Load Balancer"* para tráfego distribuído.  
+
+3. *Armazenamento*:  
+   - Para dados críticos: *GRS* ou *ZRS*.  
+   - Para testes/não críticos: *LRS* (custo menor).  
+
+4. *Link de Referência*:  
+   - [Criar VM no Azure](https://portal.azure.com/#create/Microsoft.VirtualMachine)  
+
+---
+
+## 💡 *Decisões que Impactam SLA e Custo*  
+
+| *Fator*               | *Impacto no SLA*       | *Custo*          |  
+|-------------------------|--------------------------|--------------------|  
+| Mais Zonas de Disponibilidade | ↑ Disponibilidade (99.99%+) | ↑ Custo |  
+| Armazenamento GRS/ZRS   | ↑ Resiliência            | ↑ Custo |  
+| Máquinas Spot           | Pode ser interrompido    | ↓ Custo (até 90%) |  
+
+### *Perguntas-Chave para Definir Arquitetura*:  
+1. *Qual o tempo de inatividade aceitável?*  
+   - Ex: Um e-commerce precisa de 99.99%, enquanto um blog pode usar 99.9%.  
+2. *Precisa de replicação em outra região?*  
+   - Depende de compliance (ex: GDPR) e RTO (Recovery Time Objective).  
+3. *É um ambiente de teste ou produção?*  
+   - Testes podem usar recursos Spot/LRS para economia.  
+
+---
+
+## 🚀 *Melhores Práticas para Profissionais*  
+- *Documente decisões*: Justifique escolhas (ex: "Usamos GRS para backup de BD financeiro").  
+- *Monitore SLAs: Use ferramentas como **Azure Monitor* ou *AWS CloudWatch*.  
+- *Balanceie custo e disponibilidade*:  
+  - *Exemplo*: Use VMs reservadas para cargas estáveis + Spot para batch processing.  
+
+---
+
+## 📂 *Estrutura do Repositório*  
+- /docs: SLAs comparativos por provedor (AWS/Azure/GCP).  
+- /templates: Scripts Terraform para deploy multi-AZ.  
+- /case-studies: Análises de custo vs. disponibilidade.  
+
+*Contribuições são bem-vindas!*  
+Abra *issues* para discutir estratégias ou envie *PRs* com melhorias.  
+
+> 💬 "Como profissional, nosso papel é otimizar a relação entre disponibilidade, custo e resiliência – sempre alinhado ao propósito do projeto."  
+
+🔗 *Links Úteis*:  
+- [Calculadora de SLA](https://www.slacalculator.com/)  
+- [Microsoft SLA para VMs](https://azure.microsoft.com/en-us/support/legal/sla/virtual-machines/)
